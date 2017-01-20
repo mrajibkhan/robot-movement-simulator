@@ -1,0 +1,52 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.3.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = 'robot-movement-simulator'
+	version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile ('org.springframework.boot:spring-boot-starter')
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile ('junit:junit:[4,)')
+}
+
+test {
+	testLogging {
+		// set options for log level LIFECYCLE
+		events "failed", "passed"
+		exceptionFormat "short"
+
+		// set options for log level DEBUG
+		debug {
+			events "started", "skipped", "failed"
+			exceptionFormat "full"
+		}
+
+		// remove standard output/error logging from --info builds
+		// by assigning only 'failed' and 'skipped' events
+		info.events = ["failed", "skipped"]
+	}
+}
