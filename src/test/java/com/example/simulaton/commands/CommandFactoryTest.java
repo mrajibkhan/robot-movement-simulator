@@ -8,6 +8,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -42,5 +44,6 @@ public class CommandFactoryTest {
         thrown.expectMessage("Unknown command");
         commandFactory.executeCommand(null, position);
     }
+
 
 }

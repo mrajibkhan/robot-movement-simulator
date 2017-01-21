@@ -22,7 +22,24 @@ public class Position {
 
     @Override
     public String toString() {
-        return "Position=(" + point.getX() + ", " + point.getY() + ", " + direction.value() + ")";
+        return "Position=(" + (int)point.getX() + ", " + (int)point.getY() + ", " + direction.value() + ")";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Position position = (Position) o;
+
+        if (point != null ? !point.equals(position.point) : position.point != null) return false;
+        return direction != null ? direction.equals(position.direction) : position.direction == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = point != null ? point.hashCode() : 0;
+        result = 31 * result + (direction != null ? direction.hashCode() : 0);
+        return result;
+    }
 }

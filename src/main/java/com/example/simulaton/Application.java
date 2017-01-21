@@ -1,5 +1,6 @@
 package com.example.simulaton;
 
+import com.example.simulaton.controllers.RobotController;
 import com.example.simulaton.services.UserInteractionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,24 +14,19 @@ public class Application implements CommandLineRunner {
 
     Logger log = LoggerFactory.getLogger(Application.class);
 
-    UserInteractionService userInteractionService;
+    RobotController robotController;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
     @Autowired
-    public void setUserInteractionService(UserInteractionService userInteractionService) {
-        this.userInteractionService = userInteractionService;
+    public void setRobotController(RobotController robotController) {
+        this.robotController = robotController;
     }
 
     @Override
     public void run(String... args) {
-        // show welcome message at the beginning of the application
-        userInteractionService.showWelcomeMessage();
-        // show help message to show accepted commands
-        userInteractionService.showHelpMessage();
-        // start interacting with user (i.e. take user commands)
-        userInteractionService.readUserInput();
+        robotController.run();
     }
 }

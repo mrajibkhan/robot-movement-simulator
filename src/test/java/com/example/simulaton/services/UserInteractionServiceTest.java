@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertThat;
 public class UserInteractionServiceTest {
     static final String WELCOME_MSG = "Welcome!";
     static final String HELP_MSG = "Help Message";
-    static final String USER_INPUT = "PLACE 0,0,NORTH\n";
+    static final String USER_INPUT = "PLACE 0,0,NORTH";
     UserInteractionService userInteractionService;
     ByteArrayOutputStream outSpy;
 
@@ -43,9 +44,9 @@ public class UserInteractionServiceTest {
     }
 
     @Test
-    public void readUserInput_should_print_user_input() {
-        userInteractionService.readUserInput();
-        assertThat("should print user input message", outSpy.toString(), containsString(USER_INPUT));
+    public void readUserInput_should_return_user_input() {
+        String input = userInteractionService.readUserInput();
+        assertThat("should return user input message", input, containsString(USER_INPUT));
     }
 
 }

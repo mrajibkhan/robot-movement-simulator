@@ -5,12 +5,12 @@ import com.example.simulaton.models.Position;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Created by rajib.khan on 1/21/17.
  */
-@Component
 public class CommandFactory {
 
     private final HashMap<CommandType, Command>	commands;
