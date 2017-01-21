@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verify;
 public class RobotApplicationTests {
 
     @InjectMocks
-    RobotApplication application;
+    Application application;
 
     @Mock
     UserInteractionService userInteractionService;

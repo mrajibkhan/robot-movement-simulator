@@ -9,14 +9,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RobotApplication implements CommandLineRunner {
+public class Application implements CommandLineRunner {
 
-    Logger log = LoggerFactory.getLogger(RobotApplication.class);
+    Logger log = LoggerFactory.getLogger(Application.class);
 
     UserInteractionService userInteractionService;
 
     public static void main(String[] args) {
-        SpringApplication.run(RobotApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
     @Autowired
