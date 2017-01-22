@@ -46,7 +46,8 @@ public class CommandFactory {
             return p;
         });
         cf.addCommand(CommandType.MOVE, (p, r) -> {
-            throw new InvalidCommnadException("command not implemented: " + CommandType.MOVE.value());
+            CommandUtil.move(r);
+            return p;
         });
         cf.addCommand(CommandType.REPORT, (p, r) -> {
             logger.info("Robot position: " + (r.isPresent() ? r.get().getCurrentPosition() : "unknown"));

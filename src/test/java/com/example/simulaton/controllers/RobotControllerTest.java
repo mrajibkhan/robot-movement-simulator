@@ -113,16 +113,6 @@ public class RobotControllerTest {
     }
 
     @Test
-    public void run_should_display_not_implemented_for_move_afer_start() {
-        Mockito.when(userInteractionService.readUserInput())
-                .thenReturn("PLACE 0,0,NORTH")
-                .thenReturn("MOVE")
-                .thenReturn("QUIT");
-        robotController.run();
-        assertThat(capture.toString(), containsString("command not implemented: MOVE"));
-    }
-
-    @Test
     public void placeRobotOnTable_should_initialise_robot() {
         Position startPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
         robotController.placeRobotOnTable(startPosition);
@@ -156,6 +146,51 @@ public class RobotControllerTest {
     public void executePositionCommand_should_position() throws InvalidCommnadException {
         robotController.executeCommand(CommandType.REPORT, Optional.empty(), Optional.empty());
         assertThat(capture.toString(), containsString("Robot position: unknown"));
+    }
+
+    @Test
+    public void move_should_increase_robots_y_position_when_facing_NORTH() {
+        Position expectedPosition = new Position(2, 4, new Directions().get(DirectionEnum.NORTH));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 2, 3, NORTH")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+    }
+
+    @Test
+    public void move_should_decrease_robots_y_position_when_facing_SOUTH() {
+        Position expectedPosition = new Position(2, 2, new Directions().get(DirectionEnum.SOUTH));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 2, 3, SOUTH")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+    }
+
+    @Test
+    public void move_should_increase_robots_x_position_when_facing_EAST() {
+        Position expectedPosition = new Position(4, 2, new Directions().get(DirectionEnum.EAST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 3, 2, EAST")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+    }
+
+    @Test
+    public void move_should_decrease_robots_x_position_when_facing_WEST() {
+        Position expectedPosition = new Position(2, 2, new Directions().get(DirectionEnum.WEST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 3, 2, WEST")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+
     }
 
 }
