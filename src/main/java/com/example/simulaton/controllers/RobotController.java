@@ -25,28 +25,28 @@ import java.util.Optional;
 @Component
 public class RobotController {
 
-    Logger logger = LoggerFactory.getLogger(RobotController.class);
-
     protected Optional<Robot> robot = Optional.empty();
-    CommandFactory commandFactory;
+    Logger logger = LoggerFactory.getLogger(RobotController.class);
+    CommandFactory commandFactory = CommandFactory.init();
+    ;
     UserInteractionService userInteractionService;
 
-    public void run () {
-        commandFactory = CommandFactory.init();
+    public void run() {
         // show welcome message at the beginning of the application
         userInteractionService.showWelcomeMessage();
         // show help message to show accepted commands
         userInteractionService.showHelpMessage();
         // start interacting with user (i.e. take user commands)
         String inputString = "";
-        Map<CommandType, Optional<Position>> commandMap = new HashMap<CommandType, Optional<Position>>();;
+        Map<CommandType, Optional<Position>> commandMap = new HashMap<CommandType, Optional<Position>>();
+        ;
         while (true) {
             inputString = userInteractionService.readUserInput();
             try {
                 commandMap = CommandUtil.parseCommand(inputString);
             } catch (InvalidCommnadException icEx) {
-                 logger.error("ERROR: " + icEx.getMessage());
-                 continue;
+                logger.error("ERROR: " + icEx.getMessage());
+                continue;
             }
             if (commandMap.isEmpty()) {
                 logger.warn("You entered an invalid command: " + inputString + ". Please enter a valid command.");
@@ -60,8 +60,10 @@ public class RobotController {
                 break;
             }
 
-            if(!robot.isPresent()) {
-                if(command.equals(CommandType.PLACE)) {
+            logger.info("You entered: " + command.name() + (position.isPresent() ? " " + position.get() : ""));
+
+            if (!robot.isPresent()) {
+                if (command.equals(CommandType.PLACE)) {
                     logger.info("Robot is placed on the table. Position: " + position.get());
                     placeRobotOnTable(position.get());
                 } else {
@@ -69,15 +71,14 @@ public class RobotController {
                     continue;
                 }
             }
-            logger.info("You entered: " + command.name() + (position.isPresent()? " " + position.get() : ""));
 
             executeCommand(command, position, robot);
-
         }
     }
 
     /**
      * executes commands according to command implementation {@link CommandFactory#init()}
+     *
      * @param commandType
      * @param position
      * @param robot
@@ -93,6 +94,7 @@ public class RobotController {
 
     /**
      * places the robot on the table at the provided {@link Position}.
+     *
      * @param position
      */
     protected void placeRobotOnTable(Position position) {

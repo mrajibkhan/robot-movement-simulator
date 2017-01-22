@@ -61,7 +61,7 @@ public class Directions {
     }
 
     public String getDirectionsAsString() {
-        return directionMap.keySet().stream().map(i-> i.name()).sorted().collect(Collectors.joining(", "));
+        return directionMap.keySet().stream().map(i -> i.name()).sorted().collect(Collectors.joining(", "));
     }
 
 }

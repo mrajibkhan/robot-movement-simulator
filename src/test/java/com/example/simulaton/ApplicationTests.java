@@ -1,7 +1,6 @@
 package com.example.simulaton;
 
 import com.example.simulaton.controllers.RobotController;
-import com.example.simulaton.services.UserInteractionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

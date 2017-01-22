@@ -8,7 +8,6 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
