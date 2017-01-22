@@ -147,4 +147,48 @@ public class CommandUtilTest {
         assertThat("has rotated should return true", hasRotated, is(true));
         assertThat("current direction should be EAST", robot.getCurrentPosition(), is(rotatedPosition));
     }
+
+    @Test
+    public void move_should_increase_robots_y_position_when_facing_NORTH() {
+        Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
+        Position movedPosition = new Position(0, 1, new Directions().get(DirectionEnum.NORTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        assertThat("hasMoved should return true", hasMoved, is(true));
+        assertThat("current position y should increase", robot.getCurrentPosition(), is(movedPosition));
+    }
+
+    @Test
+    public void move_should_decrease_robots_x_position_when_facing_SOUTH() {
+        Position currentPosition = new Position(0, 5, new Directions().get(DirectionEnum.SOUTH));
+        Position movedPosition = new Position(0, 4, new Directions().get(DirectionEnum.SOUTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        assertThat("hasMoved should return true", hasMoved, is(true));
+        assertThat("current position y should decrease", robot.getCurrentPosition(), is(movedPosition));
+    }
+
+    @Test
+    public void move_should_increase_robots_x_position_when_facing_EAST() {
+        Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.EAST));
+        Position movedPosition = new Position(1, 0, new Directions().get(DirectionEnum.EAST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        assertThat("hasMoved should return true", hasMoved, is(true));
+        assertThat("current position x should increase", robot.getCurrentPosition(), is(movedPosition));
+    }
+
+    @Test
+    public void move_should_decrease_robots_x_position_when_facing_WEST() {
+        Position currentPosition = new Position(5, 0, new Directions().get(DirectionEnum.WEST));
+        Position movedPosition = new Position(4, 0, new Directions().get(DirectionEnum.WEST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        assertThat("hasMoved should return true", hasMoved, is(true));
+        assertThat("current position x should decrease", robot.getCurrentPosition(), is(movedPosition));
+    }
 }

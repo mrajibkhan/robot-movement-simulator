@@ -3,7 +3,9 @@ package com.example.simulaton.utils;
 import com.example.simulaton.commands.CommandType;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.*;
+import com.example.simulaton.models.Robot;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -128,6 +130,38 @@ public class CommandUtil {
         Direction newDirection = commandType.equals(CommandType.LEFT) ?
                 currentPosition.getDirection().left() : currentPosition.getDirection().right();
         robot.get().setCurrentPosition(new Position(currentPosition.getPoint().x, currentPosition.getPoint().y, newDirection));
+
+        return true;
+    }
+
+    public static boolean move(Optional<Robot> robot) {
+        if (robot == null || !robot.isPresent()) return false;
+
+        Position currentPosition = robot.get().getCurrentPosition();
+        if (currentPosition == null) return false;
+
+        Direction direction = currentPosition.getDirection();
+        Point currentPoint = currentPosition.getPoint();
+
+        int x = currentPoint.x;
+        int y = currentPoint.y;
+
+        switch (direction.value()) {
+            case NORTH:
+                y++;
+                break;
+            case SOUTH:
+                y--;
+                break;
+            case EAST:
+                x++;
+                break;
+            case WEST:
+                x--;
+                break;
+        }
+
+        robot.get().setCurrentPosition(new Position(x, y, direction));
 
         return true;
     }
