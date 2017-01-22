@@ -135,6 +135,42 @@ public class CommandUtil {
         return true;
     }
 
+    /**
+     * Places the {@link Robot} at the specified {@link Position}
+     * if the specified {@link Position} outside of the table
+     *
+     * @param robot
+     * @param position {@link Position} to place the robot at
+     * @param min      minimum allowed location ({@link Point})
+     * @param max      maximum allowed location ({@link Point})
+     * @return
+     * @throws FalloffException if move causes the robot to fall off the table
+     */
+    public static boolean place(Optional<Robot> robot, Optional<Position> position, Point min, Point max) throws FalloffException {
+        if (!(robot.isPresent() && position.isPresent())) {
+            return false;
+        }
+        Point placingPoint = position.get().getPoint();
+
+        if (!isPositionValid(placingPoint.x, placingPoint.y, min, max)) {
+            throw new FalloffException("Invalid placing (X = " + placingPoint.x + ", Y = " + placingPoint.y +
+                    "). Prevented falling off the table.");
+        }
+
+        robot.get().setCurrentPosition(position.get());
+
+        return true;
+    }
+
+    /**
+     * Moves the robot 1 unit in the current facing (north, south, east, west)
+     *
+     * @param robot
+     * @param min   minimum allowed location ({@link Point})
+     * @param max   maximum allowed location ({@link Point})
+     * @return
+     * @throws FalloffException if move causes the robot to fall off the table
+     */
     public static boolean move(Optional<Robot> robot, Point min, Point max) throws FalloffException {
         if (robot == null || !robot.isPresent()) return false;
 
@@ -162,7 +198,7 @@ public class CommandUtil {
                 break;
         }
 
-        if (!isMoveValid(x, y, min, max)) {
+        if (!isPositionValid(x, y, min, max)) {
             throw new FalloffException("Invalid move (X = " + x + ", Y = " + y +
                     "). Prevented falling off the table.");
         }
@@ -172,7 +208,7 @@ public class CommandUtil {
         return true;
     }
 
-    public static boolean isMoveValid(int x, int y, Point min, Point max) {
+    public static boolean isPositionValid(int x, int y, Point min, Point max) {
         if (x >= min.x && x <= max.x
                 && y >= min.y && y <= max.y) {
             return true;

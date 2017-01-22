@@ -12,14 +12,18 @@ import java.util.stream.Collectors;
 
 /**
  * Created by rajib.khan on 1/21/17.
+ * {@link CommandFactory} sets up all the {@link Command}s and behaviour
+ * for these {@link Command}s
  */
 public class CommandFactory {
 
     private static final String MESSAGE_QUIT = "Exiting simulator!";
     static Logger logger = LoggerFactory.getLogger(CommandFactory.class);
+    // minPoint and maxPoint will be set as defined in application.properties
     static Point minPoint = new Point(0, 0);
     static Point maxPoint = new Point(5, 5);
     private final HashMap<CommandType, Command> commands;
+
     private CommandFactory() {
         commands = new HashMap<CommandType, Command>();
     }
@@ -33,8 +37,10 @@ public class CommandFactory {
     public static CommandFactory init() {
         CommandFactory cf = new CommandFactory();
         cf.addCommand(CommandType.PLACE, (p, r) -> {
-            if (r.isPresent() && p.isPresent()) {
-                r.get().setCurrentPosition(p.get());
+            try {
+                CommandUtil.place(r, p, minPoint, maxPoint);
+            } catch (FalloffException foEx) {
+                logger.error(foEx.getMessage());
             }
             return p;
         });
@@ -66,6 +72,14 @@ public class CommandFactory {
             return p;
         });
         return cf;
+    }
+
+    public static void setMinPoint(Point minPoint) {
+        CommandFactory.minPoint = minPoint;
+    }
+
+    public static void setMaxPoint(Point maxPoint) {
+        CommandFactory.maxPoint = maxPoint;
     }
 
     /**

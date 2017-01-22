@@ -46,11 +46,6 @@ public class UserInteractionService {
     }
 
     public String readUserInput() {
-        String inputStr = "";
-//            if (scanner.hasNextLine()) {
-//                inputStr = scanner.nextLine();
-//            }
-
         return scanner.nextLine();
     }
 

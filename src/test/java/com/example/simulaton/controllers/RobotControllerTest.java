@@ -7,6 +7,7 @@ import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
 import com.example.simulaton.models.Robot;
 import com.example.simulaton.services.UserInteractionService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,14 @@ public class RobotControllerTest {
     RobotController robotController;
     @Mock
     UserInteractionService userInteractionService;
+
+    @Before
+    public void setUp() {
+        robotController.setxMin(0);
+        robotController.setxMax(5);
+        robotController.setyMin(0);
+        robotController.setyMax(5);
+    }
 
     @Test
     public void run_should_place_robot_on_table() {
@@ -239,5 +248,53 @@ public class RobotControllerTest {
         robotController.run();
         assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
         assertThat(capture.toString(), containsString("Invalid move (X = 2, Y = 6). Prevented falling off the table"));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_x_below_0() {
+        Position expectedPosition = new Position(0, 2, new Directions().get(DirectionEnum.WEST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 0, 2, WEST")
+                .thenReturn("PLACE -1, 2, WEST")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid placing (X = -1, Y = 2). Prevented falling off the table"));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_x_over_5() {
+        Position expectedPosition = new Position(5, 2, new Directions().get(DirectionEnum.EAST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 5, 2, EAST")
+                .thenReturn("PLACE 6, 2, EAST")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid placing (X = 6, Y = 2). Prevented falling off the table"));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_y_below_0() {
+        Position expectedPosition = new Position(0, 0, new Directions().get(DirectionEnum.SOUTH));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 0, 0, SOUTH")
+                .thenReturn("PLACE 0, -1, SOUTH")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid placing (X = 0, Y = -1). Prevented falling off the table"));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_y_over_5() {
+        Position expectedPosition = new Position(2, 5, new Directions().get(DirectionEnum.NORTH));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 2, 5, NORTH")
+                .thenReturn("PLACE 2, 6, NORTH")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid placing (X = 2, Y = 6). Prevented falling off the table"));
     }
 }
