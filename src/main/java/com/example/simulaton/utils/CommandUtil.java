@@ -25,7 +25,7 @@ public class CommandUtil {
 
         if(!command.isPresent()) {
             return commandMap;
-        } else if (command.get().name().equals(CommandType.PLACE)) {
+        } else if (command.get().equals(CommandType.PLACE)) {
             position = Optional.of(parsePlaceCommand(inputStr));
         }
 

@@ -44,37 +44,38 @@ public class RobotController {
             try {
                 commandMap = CommandUtil.parseCommand(inputString);
             } catch (InvalidCommnadException icEx) {
-
+                 logger.error("ERROR: " + icEx.getMessage());
+                 continue;
             }
             if (commandMap.isEmpty()) {
                 logger.warn("You entered an invalid command: " + inputString + ". Please enter a valid command\n");
                 continue;
             }
             CommandType command = (CommandType) commandMap.keySet().toArray()[0];
-            if (command.equals(CommandType.QUIT)) {
-                try {
-                    commandFactory.executeCommand(command, commandMap.get(command));
-                } catch (Exception ex) {
+            Optional<Position> position = commandMap.get(command);
 
-                } finally {
-                    break;
-                }
-            }
             if(!robot.isPresent()) {
                 if(command.equals(CommandType.PLACE)) {
-                    robot = Optional.of(new Robot("1")); //set ID for robot (any value as this is the only robot!)
+                    logger.info("Robot is placed on the table. Position: " + position.get());
+                    placeRobotOnTable(position.get());
                 } else {
-                    logger.warn("To start please enter PLACE e.g. PLACE 0,0,NORTH\n");
+                    logger.warn("To start please enter PLACE e.g. PLACE 0,0,NORTH");
                     continue;
                 }
             }
+            logger.info("You entered: " + command.name() + (position.isPresent()? position.get() : ""));
 
-            Optional<Position> position = commandMap.get(command);
-            logger.info("You entered: " + command.name() + (position.isPresent()? position : ""));
+            if (command.equals(CommandType.QUIT)) break;
 
         }
 
 
+    }
+
+    protected void placeRobotOnTable(Position position) {
+        robot = Optional.of(new Robot("1")); //set ID for robot (any value as this is the only robot!)
+        robot.get().setStartPosition(position);
+        robot.get().setCurrentPosition(position);
     }
 
     @Autowired
