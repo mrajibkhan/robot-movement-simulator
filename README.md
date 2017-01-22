@@ -15,6 +15,7 @@ See [PROBLEM.md](PROBLEM.md) file for detailed description
  * each feature should be maintained in a brach (branches won't be removed for now)
  * after completion of a feature / user story feature branch will be merged into master branch 
  * there should be a deployable / executable application after completion and running corresponding tests  
+ 
 ## Features / User stories: see in [docs/user_stories](docs/user_stories.md)
 
 # Solution
@@ -29,4 +30,19 @@ quite large considering the requirements of the application.
  * JAVA - 1.8.x (development env version 1.8.0_102)
  * Gradle - 3.3
  * Developed on MacOS (OS X EI Capitan - 10.11.6)
+ 
+# **How to run the application**  
+ 
+# Run Tests
+./gradlew clean test
+
+# Build
+./gradlew clean build
+
+# Run the application
+
+java -jar ./build/libs/robot-movement-simulator-0.0.1-SNAPSHOT.jar
+ 
+
+
   

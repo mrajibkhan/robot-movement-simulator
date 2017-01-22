@@ -45,9 +45,13 @@ public class UserInteractionService {
         output.println(helpMessage);
     }
 
-    public void readUserInput() {
-        String in = scanner.nextLine();
-        output.println("You entered: " + in);
+    public String readUserInput() {
+        String inputStr = "";
+//            if (scanner.hasNextLine()) {
+//                inputStr = scanner.nextLine();
+//            }
+
+        return scanner.nextLine();
     }
 
 }

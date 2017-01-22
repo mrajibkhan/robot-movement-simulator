@@ -1,5 +1,6 @@
 package com.example.simulaton;
 
+import com.example.simulaton.controllers.RobotController;
 import com.example.simulaton.services.UserInteractionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,18 +12,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RobotApplicationTests {
+public class ApplicationTests {
 
     @InjectMocks
-    RobotApplication application;
+    Application application;
 
     @Mock
-    UserInteractionService userInteractionService;
+    RobotController robotController;
 
     @Test
     public void runTest() {
         application.run(new String[]{""});
-        verify(userInteractionService, times(1)).readUserInput();
+        verify(robotController, times(1)).run();
     }
 
 }
