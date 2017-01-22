@@ -193,4 +193,51 @@ public class RobotControllerTest {
 
     }
 
+    @Test
+    public void move_should_prevent_robots_falling_when_x_below_0() {
+        Position expectedPosition = new Position(0, 2, new Directions().get(DirectionEnum.WEST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 0, 2, WEST")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid move (X = -1, Y = 2). Prevented falling off the table"));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_x_over_5() {
+        Position expectedPosition = new Position(5, 2, new Directions().get(DirectionEnum.EAST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 5, 2, EAST")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid move (X = 6, Y = 2). Prevented falling off the table"));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_y_below_0() {
+        Position expectedPosition = new Position(0, 0, new Directions().get(DirectionEnum.SOUTH));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 0, 0, SOUTH")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid move (X = 0, Y = -1). Prevented falling off the table"));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_y_over_5() {
+        Position expectedPosition = new Position(2, 5, new Directions().get(DirectionEnum.NORTH));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 2, 5, NORTH")
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+        assertThat(capture.toString(), containsString("Invalid move (X = 2, Y = 6). Prevented falling off the table"));
+    }
 }

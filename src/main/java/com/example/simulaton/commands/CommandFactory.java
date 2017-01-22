@@ -1,10 +1,12 @@
 package com.example.simulaton.commands;
 
+import com.example.simulaton.exceptions.FalloffException;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.utils.CommandUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -15,8 +17,9 @@ public class CommandFactory {
 
     private static final String MESSAGE_QUIT = "Exiting simulator!";
     static Logger logger = LoggerFactory.getLogger(CommandFactory.class);
+    static Point minPoint = new Point(0, 0);
+    static Point maxPoint = new Point(5, 5);
     private final HashMap<CommandType, Command> commands;
-
     private CommandFactory() {
         commands = new HashMap<CommandType, Command>();
     }
@@ -46,7 +49,12 @@ public class CommandFactory {
             return p;
         });
         cf.addCommand(CommandType.MOVE, (p, r) -> {
-            CommandUtil.move(r);
+            try {
+                CommandUtil.move(r, minPoint, maxPoint);
+            } catch (FalloffException foEx) {
+                logger.error(foEx.getMessage());
+            }
+
             return p;
         });
         cf.addCommand(CommandType.REPORT, (p, r) -> {

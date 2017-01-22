@@ -28,8 +28,12 @@ public class RobotController {
     protected Optional<Robot> robot = Optional.empty();
     Logger logger = LoggerFactory.getLogger(RobotController.class);
     CommandFactory commandFactory = CommandFactory.init();
-    ;
     UserInteractionService userInteractionService;
+
+    int maxX = 5;
+    int minX = 0;
+    int maxY = 5;
+    int minY = 0;
 
     public void run() {
         // show welcome message at the beginning of the application

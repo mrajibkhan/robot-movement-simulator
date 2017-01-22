@@ -1,6 +1,7 @@
 package com.example.simulaton.utils;
 
 import com.example.simulaton.commands.CommandType;
+import com.example.simulaton.exceptions.FalloffException;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.*;
 import com.example.simulaton.models.Robot;
@@ -134,7 +135,7 @@ public class CommandUtil {
         return true;
     }
 
-    public static boolean move(Optional<Robot> robot) {
+    public static boolean move(Optional<Robot> robot, Point min, Point max) throws FalloffException {
         if (robot == null || !robot.isPresent()) return false;
 
         Position currentPosition = robot.get().getCurrentPosition();
@@ -161,8 +162,22 @@ public class CommandUtil {
                 break;
         }
 
+        if (!isMoveValid(x, y, min, max)) {
+            throw new FalloffException("Invalid move (X = " + x + ", Y = " + y +
+                    "). Prevented falling off the table.");
+        }
+
         robot.get().setCurrentPosition(new Position(x, y, direction));
 
         return true;
+    }
+
+    public static boolean isMoveValid(int x, int y, Point min, Point max) {
+        if (x >= min.x && x <= max.x
+                && y >= min.y && y <= max.y) {
+            return true;
+        }
+
+        return false;
     }
 }
