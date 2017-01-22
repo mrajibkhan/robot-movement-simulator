@@ -25,7 +25,7 @@ public class CommandFactoryTest {
     public ExpectedException thrown = ExpectedException.none();
 
 
-    private static final String sortedCommandsStr = "LEFT, MOVE, PLACE, REPORT, RIGHT";
+    private static final String sortedCommandsStr = "LEFT, MOVE, PLACE, QUIT, REPORT, RIGHT";
     private Position position = new Position(0,0,new Direction(DirectionEnum.NORTH));
 
     @Test
@@ -35,14 +35,14 @@ public class CommandFactoryTest {
 
     @Test
     public void executePositionCommand_should_return_position () throws InvalidCommnadException {
-        assertThat(commandFactory.executeCommand(CommandType.PLACE, position), is(position));
+        assertThat(commandFactory.executeCommand(CommandType.PLACE, Optional.of(position)), is(Optional.of(position)));
     }
 
     @Test
     public void executeUnknownCommand_should_throw_exception () throws InvalidCommnadException {
         thrown.expect(InvalidCommnadException.class);
         thrown.expectMessage("Unknown command");
-        commandFactory.executeCommand(null, position);
+        commandFactory.executeCommand(null, Optional.of(position));
     }
 
 

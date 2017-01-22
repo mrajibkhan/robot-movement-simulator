@@ -8,7 +8,8 @@ public enum CommandType {
         MOVE,
         LEFT,
         RIGHT,
-        REPORT;
+        REPORT,
+        QUIT;
 
         public String value() {
             return name();

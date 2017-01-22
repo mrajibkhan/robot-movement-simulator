@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by rajib.khan on 1/21/17.
@@ -57,6 +58,10 @@ public class Directions {
         directionMap.put(DirectionEnum.EAST, east);
         directionMap.put(DirectionEnum.SOUTH, south);
         directionMap.put(DirectionEnum.WEST, west);
+    }
+
+    public String getDirectionsAsString() {
+        return directionMap.keySet().stream().map(i-> i.name()).sorted().collect(Collectors.joining(", "));
     }
 
 }

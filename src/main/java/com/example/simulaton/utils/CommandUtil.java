@@ -4,19 +4,36 @@ import com.example.simulaton.commands.CommandType;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.Direction;
 import com.example.simulaton.models.DirectionEnum;
+import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by rajib.khan on 1/22/17.
  */
 public class CommandUtil {
 
-    Logger logger = LoggerFactory.getLogger(CommandUtil.class);
+    static Directions directions = new Directions();
+
+    public static Map<CommandType, Optional<Position>> parseCommand(String inputStr) throws InvalidCommnadException {
+        Map<CommandType, Optional<Position>> commandMap = new HashMap<CommandType, Optional<Position>>();
+        Optional<CommandType> command = getCommandFromString(inputStr);
+        Optional<Position> position = Optional.empty();
+
+        if(!command.isPresent()) {
+            return commandMap;
+        } else if (command.get().name().equals(CommandType.PLACE)) {
+            position = Optional.of(parsePlaceCommand(inputStr));
+        }
+
+        commandMap.put(command.get(), position);
+
+        return commandMap;
+    }
+
 
     public static Position parsePlaceCommand(String placeCommandStr) throws InvalidCommnadException {
         if (placeCommandStr == null || placeCommandStr.isEmpty() ||
@@ -34,7 +51,6 @@ public class CommandUtil {
             throw new InvalidCommnadException("Invalid PLACE command. Check values for X,Y and F");
 
         positionStr = positionStr.replaceAll(" ", "");
-        System.out.println("position = " + positionStr);
         String[] positionArray = positionStr.split(",", 3);
         if (positionArray.length < 3) {
             throw new InvalidCommnadException("Invalid PLACE command. Check values for X,Y and F");
@@ -44,13 +60,14 @@ public class CommandUtil {
             x = Integer.valueOf(positionArray[0]);
             y = Integer.valueOf(positionArray[1]);
         } catch (NumberFormatException nfEx) {
-            throw new InvalidCommnadException("Invalid PLACE command. Wrong X = " + x + " or Y = " + y
+            throw new InvalidCommnadException("Invalid PLACE command. Wrong X = " + positionArray[0] + " or Y = " + positionArray[1]
                     + ". X and Y should be Integers");
         }
 
         direction = getDirectionFromString(positionArray[2]);
         if (!direction.isPresent()) {
-            throw new InvalidCommnadException("Invalid PLACE command. Wrong direction (F). Direction should be " + DirectionEnum.values());
+            throw new InvalidCommnadException("Invalid PLACE command: wrong direction, Direction should be "
+                    + directions.getDirectionsAsString());
         }
 
         return new Position(x, y, new Direction(direction.get()));

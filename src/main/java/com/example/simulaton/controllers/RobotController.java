@@ -1,13 +1,19 @@
 package com.example.simulaton.controllers;
 
 import com.example.simulaton.commands.CommandFactory;
+import com.example.simulaton.commands.CommandType;
+import com.example.simulaton.exceptions.InvalidCommnadException;
+import com.example.simulaton.models.Position;
 import com.example.simulaton.models.Robot;
 import com.example.simulaton.services.UserInteractionService;
+import com.example.simulaton.utils.CommandUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,23 +38,48 @@ public class RobotController {
         userInteractionService.showHelpMessage();
         // start interacting with user (i.e. take user commands)
         String inputString = "";
+        Map<CommandType, Optional<Position>> commandMap = new HashMap<CommandType, Optional<Position>>();;
         while (true) {
             inputString = userInteractionService.readUserInput();
-            if (isValidUserCommand(inputString)) {
+            try {
+                commandMap = CommandUtil.parseCommand(inputString);
+            } catch (InvalidCommnadException icEx) {
 
-            } else {
-                logger.warn("You entered an invalid command: " + inputString);
             }
+            if (commandMap.isEmpty()) {
+                logger.warn("You entered an invalid command: " + inputString + ". Please enter a valid command\n");
+                continue;
+            }
+            CommandType command = (CommandType) commandMap.keySet().toArray()[0];
+            if (command.equals(CommandType.QUIT)) {
+                try {
+                    commandFactory.executeCommand(command, commandMap.get(command));
+                } catch (Exception ex) {
+
+                } finally {
+                    break;
+                }
+            }
+            if(!robot.isPresent()) {
+                if(command.equals(CommandType.PLACE)) {
+                    robot = Optional.of(new Robot("1")); //set ID for robot (any value as this is the only robot!)
+                } else {
+                    logger.warn("To start please enter PLACE e.g. PLACE 0,0,NORTH\n");
+                    continue;
+                }
+            }
+
+            Optional<Position> position = commandMap.get(command);
+            logger.info("You entered: " + command.name() + (position.isPresent()? position : ""));
+
         }
+
+
     }
 
     @Autowired
     public void setUserInteractionService(UserInteractionService userInteractionService) {
         this.userInteractionService = userInteractionService;
-    }
-
-    private boolean isValidUserCommand(String inputStr) {
-return false;
     }
 
 }
