@@ -91,13 +91,35 @@ public class RobotControllerTest {
     }
 
     @Test
-    public void run_should_display_not_implemented_for_left_afer_start() {
+    public void run_should_change_robot_position_NORTH_to_WEST_for_LEFT_command() {
+        Position expectedPosition = new Position(0, 0, new Directions().get(DirectionEnum.WEST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 0, 0, NORTH")
+                .thenReturn("LEFT")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+    }
+
+    @Test
+    public void run_should_change_robot_position_SOUTH_to_WEST_for_RIGHT_command() {
+        Position expectedPosition = new Position(2, 3, new Directions().get(DirectionEnum.WEST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 2, 3, SOUTH")
+                .thenReturn("RIGHT")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(robotController.robot.get().getCurrentPosition(), is(expectedPosition));
+    }
+
+    @Test
+    public void run_should_display_not_implemented_for_move_afer_start() {
         Mockito.when(userInteractionService.readUserInput())
                 .thenReturn("PLACE 0,0,NORTH")
-                .thenReturn("LEFT")
-                .thenReturn("RIGHT").thenReturn("MOVE").thenReturn("REPORT").thenReturn("QUIT");
+                .thenReturn("MOVE")
+                .thenReturn("QUIT");
         robotController.run();
-        assertThat(capture.toString(), containsString("command not implemented: LEFT"));
+        assertThat(capture.toString(), containsString("command not implemented: MOVE"));
     }
 
     @Test

@@ -32,6 +32,20 @@ public class DirectionTest {
     }
 
     @Test
+    public void left_of_EAST_should_return_NORTH() {
+        Direction direction = new Direction(DirectionEnum.EAST);
+        direction.setLeft(new Direction(DirectionEnum.NORTH));
+        assertThat("should return WEST", direction.left().value(), is(DirectionEnum.NORTH));
+    }
+
+    @Test
+    public void right_of_EAST_should_return_SOUTH() {
+        Direction direction = new Direction(DirectionEnum.EAST);
+        direction.setRight(new Direction(DirectionEnum.SOUTH));
+        assertThat("should return EAST", direction.right().value(), is(DirectionEnum.SOUTH));
+    }
+
+    @Test
     public void equals_should_return_true_when_compared() {
         Direction direction = new Direction(DirectionEnum.NORTH);
         direction.setLeft(new Direction(DirectionEnum.WEST));

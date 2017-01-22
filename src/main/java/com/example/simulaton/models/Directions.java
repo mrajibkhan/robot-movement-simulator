@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * Created by rajib.khan on 1/21/17.
  * Directions is the container of all 4 {@link Direction} (north, south, east and west)
  * Each {@link Direction} is linked with left and right {@link Direction}.
- * For example, {@link DirectionEnum.NORTH} has {@link DirectionEnum.WEST} at 'left' and {@link DirectionEnum.EAST}
+ * For example, {@link DirectionEnum#NORTH} has {@link DirectionEnum#WEST} at 'left' and {@link DirectionEnum.EAST}
  * at 'right'
  */
 @Component
