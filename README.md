@@ -43,6 +43,7 @@ of the application. But above well proven production ready features of Spring fr
  * JAVA - 1.8.x (development env version 1.8.0_102)
  * Gradle - 3.3
  * Developed on MacOS (OS X EI Capitan - 10.11.6)
+ * Tested on MacOS (OS X EI Capitan - 10.11.6) and Windows 8 (using GitBash)
  
 # **How to run the application**  
 ## Get from GIT
