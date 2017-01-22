@@ -1,5 +1,6 @@
 package com.example.simulaton.controllers;
 
+import com.example.simulaton.commands.Command;
 import com.example.simulaton.commands.CommandFactory;
 import com.example.simulaton.commands.CommandType;
 import com.example.simulaton.exceptions.InvalidCommnadException;
@@ -26,7 +27,7 @@ public class RobotController {
 
     Logger logger = LoggerFactory.getLogger(RobotController.class);
 
-    Optional<Robot> robot = Optional.empty();
+    protected Optional<Robot> robot = Optional.empty();
     CommandFactory commandFactory;
     UserInteractionService userInteractionService;
 
@@ -48,11 +49,16 @@ public class RobotController {
                  continue;
             }
             if (commandMap.isEmpty()) {
-                logger.warn("You entered an invalid command: " + inputString + ". Please enter a valid command\n");
+                logger.warn("You entered an invalid command: " + inputString + ". Please enter a valid command.");
                 continue;
             }
             CommandType command = (CommandType) commandMap.keySet().toArray()[0];
             Optional<Position> position = commandMap.get(command);
+            // QUIT command is important to put here to allow breaking the loop
+            if (command.equals(CommandType.QUIT)) {
+                executeCommand(command, position, robot);
+                break;
+            }
 
             if(!robot.isPresent()) {
                 if(command.equals(CommandType.PLACE)) {
@@ -63,15 +69,32 @@ public class RobotController {
                     continue;
                 }
             }
-            logger.info("You entered: " + command.name() + (position.isPresent()? position.get() : ""));
+            logger.info("You entered: " + command.name() + (position.isPresent()? " " + position.get() : ""));
 
-            if (command.equals(CommandType.QUIT)) break;
+            executeCommand(command, position, robot);
 
         }
-
-
     }
 
+    /**
+     * executes commands according to command implementation {@link CommandFactory#init()}
+     * @param commandType
+     * @param position
+     * @param robot
+     */
+    public void executeCommand(CommandType commandType, Optional<Position> position, Optional<Robot> robot) {
+        try {
+            Command command = commandFactory.getCommand(commandType);
+            command.apply(position, robot);
+        } catch (InvalidCommnadException icEx) {
+            logger.error("Error: couldn't execute command " + commandType.name() + " - " + icEx.getMessage());
+        }
+    }
+
+    /**
+     * places the robot on the table at the provided {@link Position}.
+     * @param position
+     */
     protected void placeRobotOnTable(Position position) {
         robot = Optional.of(new Robot("1")); //set ID for robot (any value as this is the only robot!)
         robot.get().setStartPosition(position);

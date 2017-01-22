@@ -22,7 +22,7 @@ public class Position {
 
     @Override
     public String toString() {
-        return "Position=(" + (int)point.getX() + ", " + (int)point.getY() + ", " + direction.value() + ")";
+        return (int)point.getX() + ", " + (int)point.getY() + ", " + direction.value();
     }
 
     @Override

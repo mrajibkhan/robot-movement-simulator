@@ -2,6 +2,7 @@ package com.example.simulaton.commands;
 
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.Position;
+import com.example.simulaton.models.Robot;
 
 import java.util.Optional;
 
@@ -11,5 +12,5 @@ import java.util.Optional;
 
 @FunctionalInterface
 public interface Command {
-    public Optional<Position> apply(Optional<Position> position) throws InvalidCommnadException;
+    public Optional<Position> apply(Optional<Position> position, Optional<Robot> robot) throws InvalidCommnadException;
 }

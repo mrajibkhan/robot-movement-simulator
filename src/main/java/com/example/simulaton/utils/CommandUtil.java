@@ -42,7 +42,7 @@ public class CommandUtil {
         }
 
         int x = 0, y = 0;
-        Optional<DirectionEnum> direction = Optional.empty();
+        Optional<Direction> direction = Optional.empty();
 
         placeCommandStr = placeCommandStr.trim();
         String positionStr = placeCommandStr.substring(CommandType.PLACE.value().length()).trim();
@@ -70,18 +70,20 @@ public class CommandUtil {
                     + directions.getDirectionsAsString());
         }
 
-        return new Position(x, y, new Direction(direction.get()));
+        return new Position(x, y, direction.get());
 
     }
 
-    public static Optional<DirectionEnum> getDirectionFromString(String directionStr) {
+    public static Optional<Direction> getDirectionFromString(String directionStr) {
         if (directionStr == null || directionStr.isEmpty()) {
             return Optional.empty();
         }
 
-        return Arrays.asList(DirectionEnum.values()).stream()
+        Optional<DirectionEnum> directionEnumOpt = Arrays.asList(DirectionEnum.values()).stream()
                 .filter((directionEnum) -> directionStr.toUpperCase().startsWith(directionEnum.name()))
                 .findAny();
+
+        return (directionEnumOpt.isPresent()) ? Optional.of(directions.get(directionEnumOpt.get())) : Optional.empty();
     }
 
     public static Optional<CommandType> getCommandFromString(String commandStr) {

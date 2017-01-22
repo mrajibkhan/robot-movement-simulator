@@ -33,17 +33,4 @@ public class CommandFactoryTest {
         assertThat(commandFactory.getCommandsAsString(), is(sortedCommandsStr));
     }
 
-    @Test
-    public void executePositionCommand_should_return_position () throws InvalidCommnadException {
-        assertThat(commandFactory.executeCommand(CommandType.PLACE, Optional.of(position)), is(Optional.of(position)));
-    }
-
-    @Test
-    public void executeUnknownCommand_should_throw_exception () throws InvalidCommnadException {
-        thrown.expect(InvalidCommnadException.class);
-        thrown.expectMessage("Unknown command");
-        commandFactory.executeCommand(null, Optional.of(position));
-    }
-
-
 }

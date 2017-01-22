@@ -4,6 +4,7 @@ import com.example.simulaton.commands.CommandType;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.Direction;
 import com.example.simulaton.models.DirectionEnum;
+import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +20,8 @@ import static org.junit.Assert.*;
  * Created by rajib.khan on 1/22/17.
  */
 public class CommandUtilTest {
+
+    private Directions directions = new Directions();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -62,25 +65,25 @@ public class CommandUtilTest {
     @Test
     public void getDirectionFromString_should_return_NORTH() {
         assertThat("NORTH should return NORTH", CommandUtil.getDirectionFromString("NORTH"),
-                is(Optional.of(DirectionEnum.NORTH)));
+                is(Optional.of(directions.get(DirectionEnum.NORTH))));
     }
 
     @Test
     public void getDirectionFromString_should_return_SOUTH() {
         assertThat("SOUTH should return SOUTH", CommandUtil.getDirectionFromString("SOUTH"),
-                is(Optional.of(DirectionEnum.SOUTH)));
+                is(Optional.of(directions.get(DirectionEnum.SOUTH))));
     }
 
     @Test
     public void getDirectionFromString_should_return_EAST() {
         assertThat("EAST should return EAST", CommandUtil.getDirectionFromString("EAST"),
-                is(Optional.of(DirectionEnum.EAST)));
+                is(Optional.of(directions.get(DirectionEnum.EAST))));
     }
 
     @Test
     public void getDirectionFromString_should_return_WEST() {
         assertThat("NORTH should return WEST", CommandUtil.getDirectionFromString("NORTH"),
-                is(Optional.of(DirectionEnum.NORTH)));
+                is(Optional.of(directions.get(DirectionEnum.NORTH))));
     }
 
     @Test
@@ -93,7 +96,7 @@ public class CommandUtilTest {
     @Test
     public void parsePlaceCommand_should_return_position_NORTH() throws InvalidCommnadException {
         assertThat("should return (0,0,NORTH)", CommandUtil.parsePlaceCommand("PLACE    0 , 0, NORTH"),
-                is(new Position(0,0, new Direction(DirectionEnum.NORTH))));
+                is(new Position(0,0, directions.get((DirectionEnum.NORTH)))));
     }
 
     @Test

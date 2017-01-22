@@ -1,7 +1,9 @@
 package com.example.simulaton.commands;
 
 import com.example.simulaton.exceptions.InvalidCommnadException;
+import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
+import com.example.simulaton.models.Robot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,23 +25,15 @@ public class CommandFactory {
         commands = new HashMap<CommandType,Command>();
     }
 
-    public Optional<Position> executeCommand(CommandType command, Optional<Position> position) throws InvalidCommnadException {
-        if (commands.containsKey(command)) {
-            return commands.get(command).apply(position);
-        } else {
-            throw new InvalidCommnadException("Unknown command");
-        }
-    }
-
     /* Factory pattern */
     public static CommandFactory init() {
         CommandFactory cf = new CommandFactory();
-        cf.addCommand(CommandType.PLACE, (p) -> { return p;});
-        cf.addCommand(CommandType.LEFT, (p) -> { throw new InvalidCommnadException("command not Implemented: " + CommandType.LEFT.value());});
-        cf.addCommand(CommandType.RIGHT, (p) -> { throw new InvalidCommnadException("command not Implemented: " + CommandType.RIGHT.value());});
-        cf.addCommand(CommandType.MOVE, (p) -> {throw new InvalidCommnadException("command not Implemented: " + CommandType.MOVE.value());});
-        cf.addCommand(CommandType.REPORT, (p) -> {throw new InvalidCommnadException("command not Implemented: " + CommandType.REPORT.value());});
-        cf.addCommand(CommandType.QUIT, (p) -> { logger.info(MESSAGE_QUIT);return p;});
+        cf.addCommand(CommandType.PLACE, (p, r) -> { r.get().setCurrentPosition(p.get());return p;});
+        cf.addCommand(CommandType.LEFT, (p, r) -> { throw new InvalidCommnadException("command not implemented: " + CommandType.LEFT.value());});
+        cf.addCommand(CommandType.RIGHT, (p, r) -> { throw new InvalidCommnadException("command not implemented: " + CommandType.RIGHT.value());});
+        cf.addCommand(CommandType.MOVE, (p, r) -> {throw new InvalidCommnadException("command not implemented: " + CommandType.MOVE.value());});
+        cf.addCommand(CommandType.REPORT, (p, r) -> {throw new InvalidCommnadException("command not implemented: " + CommandType.REPORT.value());});
+        cf.addCommand(CommandType.QUIT, (p, r) -> { logger.info(MESSAGE_QUIT);return p;});
         return cf;
     }
 
@@ -49,5 +43,13 @@ public class CommandFactory {
 
     private void addCommand(CommandType name, Command command) {
         commands.put(name, command);
+    }
+
+    public Command getCommand(CommandType connamdType) throws InvalidCommnadException {
+        if (commands.containsKey(connamdType)) {
+            return commands.get(connamdType);
+        }
+
+        throw new InvalidCommnadException("Command not found");
     }
 }
