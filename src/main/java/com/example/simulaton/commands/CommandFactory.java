@@ -1,6 +1,7 @@
 package com.example.simulaton.commands;
 
 import com.example.simulaton.exceptions.InvalidCommnadException;
+import com.example.simulaton.utils.CommandUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +30,20 @@ public class CommandFactory {
     public static CommandFactory init() {
         CommandFactory cf = new CommandFactory();
         cf.addCommand(CommandType.PLACE, (p, r) -> {
-            r.get().setCurrentPosition(p.get());
+            if (r.isPresent() && p.isPresent()) {
+                r.get().setCurrentPosition(p.get());
+            }
             return p;
         });
+
         cf.addCommand(CommandType.LEFT, (p, r) -> {
-            throw new InvalidCommnadException("command not implemented: " + CommandType.LEFT.value());
+            CommandUtil.rotate(r, CommandType.LEFT);
+            return p;
         });
+
         cf.addCommand(CommandType.RIGHT, (p, r) -> {
-            throw new InvalidCommnadException("command not implemented: " + CommandType.RIGHT.value());
+            CommandUtil.rotate(r, CommandType.RIGHT);
+            return p;
         });
         cf.addCommand(CommandType.MOVE, (p, r) -> {
             throw new InvalidCommnadException("command not implemented: " + CommandType.MOVE.value());

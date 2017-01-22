@@ -2,10 +2,7 @@ package com.example.simulaton.utils;
 
 import com.example.simulaton.commands.CommandType;
 import com.example.simulaton.exceptions.InvalidCommnadException;
-import com.example.simulaton.models.Direction;
-import com.example.simulaton.models.DirectionEnum;
-import com.example.simulaton.models.Directions;
-import com.example.simulaton.models.Position;
+import com.example.simulaton.models.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +33,15 @@ public class CommandUtil {
     }
 
 
+    /**
+     * Parse user input for PLACE command. PLACE command should be associated
+     * with X (integer), Y (integer) and F (NORTH|SOUTH|EAST|WEST). For valid placeCommandStr argument
+     * {@link Position} is created and returned
+     *
+     * @param placeCommandStr
+     * @return position {@link Position}
+     * @throws InvalidCommnadException if placeCommandStr doesn't contain valid PLACE  X, Y or F values
+     */
     public static Position parsePlaceCommand(String placeCommandStr) throws InvalidCommnadException {
         if (placeCommandStr == null || placeCommandStr.isEmpty() ||
                 !placeCommandStr.trim().toUpperCase().startsWith(CommandType.PLACE.name())) {
@@ -87,6 +93,10 @@ public class CommandUtil {
         return (directionEnumOpt.isPresent()) ? Optional.of(directions.get(directionEnumOpt.get())) : Optional.empty();
     }
 
+    /**
+     * @param commandStr
+     * @return
+     */
     public static Optional<CommandType> getCommandFromString(String commandStr) {
         if (commandStr == null || commandStr.isEmpty()) {
             return Optional.empty();
@@ -96,11 +106,29 @@ public class CommandUtil {
                 .filter((commandEnum) -> commandStr.toUpperCase().startsWith(commandEnum.name()))
                 .findAny();
 
-        // check x,y and F values for PLACE command
-        if (commandType.isPresent() && commandType.get().equals(CommandType.PLACE)) {
+        return commandType;
+    }
 
+    /**
+     * Rotates {@link Robot}s {@link Direction} to Left or Right
+     *
+     * @param robot
+     * @param commandType
+     * @return
+     */
+    public static boolean rotate(Optional<Robot> robot, CommandType commandType) {
+        if (robot == null || !robot.isPresent()
+                || !(commandType.equals(CommandType.LEFT) || commandType.equals(CommandType.RIGHT))) {
+            return false;
         }
 
-        return commandType;
+        Position currentPosition = robot.get().getCurrentPosition();
+        if (currentPosition == null) return false;
+
+        Direction newDirection = commandType.equals(CommandType.LEFT) ?
+                currentPosition.getDirection().left() : currentPosition.getDirection().right();
+        robot.get().setCurrentPosition(new Position(currentPosition.getPoint().x, currentPosition.getPoint().y, newDirection));
+
+        return true;
     }
 }

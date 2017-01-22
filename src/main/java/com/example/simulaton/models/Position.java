@@ -7,8 +7,8 @@ import java.awt.*;
  * Used to represent the position (2D) of any object.
  */
 public class Position {
-    Point point;
-    Direction direction;
+    private Point point;
+    private Direction direction;
 
     /**
      * @param x         value of x coordinate
@@ -18,6 +18,14 @@ public class Position {
     public Position(int x, int y, Direction direction) {
         this.point = new Point(x, y);
         this.direction = direction;
+    }
+
+    public Point getPoint() {
+        return point;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     @Override

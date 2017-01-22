@@ -5,6 +5,7 @@ import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.DirectionEnum;
 import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
+import com.example.simulaton.models.Robot;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -123,5 +124,27 @@ public class CommandUtilTest {
         thrown.expect(InvalidCommnadException.class);
         thrown.expectMessage(containsString("X and Y should be Integers"));
         CommandUtil.parsePlaceCommand("PLACE    1 , B, SOUTH");
+    }
+
+    @Test
+    public void rotate_left_should_change_robots_direction_from_NORTH_to_WEST() {
+        Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
+        Position rotatedPosition = new Position(0, 0, new Directions().get(DirectionEnum.WEST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        boolean hasRotated = CommandUtil.rotate(Optional.of(robot), CommandType.LEFT);
+        assertThat("has rotated should return true", hasRotated, is(true));
+        assertThat("current direction should be WEST", robot.getCurrentPosition(), is(rotatedPosition));
+    }
+
+    @Test
+    public void rotate_right_should_change_robots_direction_from_NORTH_to_EAST() {
+        Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
+        Position rotatedPosition = new Position(0, 0, new Directions().get(DirectionEnum.EAST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        boolean hasRotated = CommandUtil.rotate(Optional.of(robot), CommandType.RIGHT);
+        assertThat("has rotated should return true", hasRotated, is(true));
+        assertThat("current direction should be EAST", robot.getCurrentPosition(), is(rotatedPosition));
     }
 }
