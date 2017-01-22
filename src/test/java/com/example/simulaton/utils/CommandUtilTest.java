@@ -1,6 +1,7 @@
 package com.example.simulaton.utils;
 
 import com.example.simulaton.commands.CommandType;
+import com.example.simulaton.exceptions.FalloffException;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.DirectionEnum;
 import com.example.simulaton.models.Directions;
@@ -10,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.awt.*;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -24,6 +26,8 @@ public class CommandUtilTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     private Directions directions = new Directions();
+    private Point minPoint = new Point(0, 0);
+    private Point maxPoint = new Point(5, 5);
 
     @Test
     public void getCommandFromString_should_return_LEFT() {
@@ -149,46 +153,191 @@ public class CommandUtilTest {
     }
 
     @Test
-    public void move_should_increase_robots_y_position_when_facing_NORTH() {
+    public void move_should_increase_robots_y_position_when_facing_NORTH() throws FalloffException {
         Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
         Position movedPosition = new Position(0, 1, new Directions().get(DirectionEnum.NORTH));
         Robot robot = new Robot("test1");
         robot.setCurrentPosition(currentPosition);
-        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        boolean hasMoved = CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
         assertThat("hasMoved should return true", hasMoved, is(true));
         assertThat("current position y should increase", robot.getCurrentPosition(), is(movedPosition));
     }
 
     @Test
-    public void move_should_decrease_robots_x_position_when_facing_SOUTH() {
+    public void move_should_decrease_robots_y_position_when_facing_SOUTH() throws FalloffException {
         Position currentPosition = new Position(0, 5, new Directions().get(DirectionEnum.SOUTH));
         Position movedPosition = new Position(0, 4, new Directions().get(DirectionEnum.SOUTH));
         Robot robot = new Robot("test1");
         robot.setCurrentPosition(currentPosition);
-        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        boolean hasMoved = CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
         assertThat("hasMoved should return true", hasMoved, is(true));
         assertThat("current position y should decrease", robot.getCurrentPosition(), is(movedPosition));
     }
 
     @Test
-    public void move_should_increase_robots_x_position_when_facing_EAST() {
+    public void move_should_increase_robots_x_position_when_facing_EAST() throws FalloffException {
         Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.EAST));
         Position movedPosition = new Position(1, 0, new Directions().get(DirectionEnum.EAST));
         Robot robot = new Robot("test1");
         robot.setCurrentPosition(currentPosition);
-        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        boolean hasMoved = CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
         assertThat("hasMoved should return true", hasMoved, is(true));
         assertThat("current position x should increase", robot.getCurrentPosition(), is(movedPosition));
     }
 
     @Test
-    public void move_should_decrease_robots_x_position_when_facing_WEST() {
+    public void move_should_decrease_robots_x_position_when_facing_WEST() throws FalloffException {
         Position currentPosition = new Position(5, 0, new Directions().get(DirectionEnum.WEST));
         Position movedPosition = new Position(4, 0, new Directions().get(DirectionEnum.WEST));
         Robot robot = new Robot("test1");
         robot.setCurrentPosition(currentPosition);
-        boolean hasMoved = CommandUtil.move(Optional.of(robot));
+        boolean hasMoved = CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
         assertThat("hasMoved should return true", hasMoved, is(true));
         assertThat("current position x should decrease", robot.getCurrentPosition(), is(movedPosition));
     }
+
+    @Test
+    public void isValidMove_should_return_false_x_below_0() {
+        assertThat(CommandUtil.isPositionValid(-1, 1, minPoint, maxPoint), is(false));
+    }
+
+    @Test
+    public void isValidMove_should_return_false_x_over_5() {
+        assertThat(CommandUtil.isPositionValid(6, 1, minPoint, maxPoint), is(false));
+    }
+
+    @Test
+    public void isValidMove_should_return_false_y_below_0() {
+        assertThat(CommandUtil.isPositionValid(0, -1, minPoint, maxPoint), is(false));
+    }
+
+    @Test
+    public void isValidMove_should_return_false_y_over_5() {
+        assertThat(CommandUtil.isPositionValid(5, 6, minPoint, maxPoint), is(false));
+    }
+
+    @Test
+    public void isValidMove_should_return_true_x_equal_0() {
+        assertThat(CommandUtil.isPositionValid(0, 1, minPoint, maxPoint), is(true));
+    }
+
+    @Test
+    public void isValidMove_should_return_true_x_equal_5() {
+        assertThat(CommandUtil.isPositionValid(5, 1, minPoint, maxPoint), is(true));
+    }
+
+    @Test
+    public void isValidMove_should_return_true_y_equal_0() {
+        assertThat(CommandUtil.isPositionValid(1, 0, minPoint, maxPoint), is(true));
+    }
+
+    @Test
+    public void isValidMove_should_return_true_y_equal_5() {
+        assertThat(CommandUtil.isPositionValid(0, 5, minPoint, maxPoint), is(true));
+    }
+
+    @Test
+    public void isValidMove_should_return_true_with_values_between_min_and_max() {
+        assertThat(CommandUtil.isPositionValid(3, 3, minPoint, maxPoint), is(true));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_x_below_0() throws FalloffException {
+        Position currentPosition = new Position(0, 2, new Directions().get(DirectionEnum.WEST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid move (X = -1, Y = 2). Prevented falling off the table"));
+
+        CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_x_over_5() throws FalloffException {
+        Position currentPosition = new Position(5, 2, new Directions().get(DirectionEnum.EAST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid move (X = 6, Y = 2). Prevented falling off the table"));
+
+        CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_y_below_0() throws FalloffException {
+        Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.SOUTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid move (X = 0, Y = -1). Prevented falling off the table"));
+
+        CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void move_should_prevent_robots_falling_when_y_over_5() throws FalloffException {
+        Position currentPosition = new Position(2, 5, new Directions().get(DirectionEnum.NORTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid move (X = 2, Y = 6). Prevented falling off the table"));
+
+        CommandUtil.move(Optional.of(robot), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_x_below_0() throws FalloffException {
+        Position currentPosition = new Position(0, 2, new Directions().get(DirectionEnum.WEST));
+        Position newPosition = new Position(-1, 2, new Directions().get(DirectionEnum.WEST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid placing (X = -1, Y = 2). Prevented falling off the table"));
+
+        CommandUtil.place(Optional.of(robot), Optional.of(newPosition), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_x_over_5() throws FalloffException {
+        Position currentPosition = new Position(5, 2, new Directions().get(DirectionEnum.EAST));
+        Position newPosition = new Position(6, 2, new Directions().get(DirectionEnum.EAST));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid placing (X = 6, Y = 2). Prevented falling off the table"));
+
+        CommandUtil.place(Optional.of(robot), Optional.of(newPosition), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_y_below_0() throws FalloffException {
+        Position currentPosition = new Position(0, 0, new Directions().get(DirectionEnum.SOUTH));
+        Position newPosition = new Position(0, -1, new Directions().get(DirectionEnum.SOUTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid placing (X = 0, Y = -1). Prevented falling off the table"));
+        CommandUtil.place(Optional.of(robot), Optional.of(newPosition), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
+    @Test
+    public void place_should_prevent_robots_falling_when_y_over_5() throws FalloffException {
+        Position currentPosition = new Position(2, 5, new Directions().get(DirectionEnum.NORTH));
+        Position newPosition = new Position(2, 6, new Directions().get(DirectionEnum.NORTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(currentPosition);
+        thrown.expect(FalloffException.class);
+        thrown.expectMessage(containsString("Invalid placing (X = 2, Y = 6). Prevented falling off the table"));
+
+        CommandUtil.place(Optional.of(robot), Optional.of(newPosition), minPoint, maxPoint);
+        assertThat(robot.getCurrentPosition(), is(currentPosition));
+    }
+
 }

@@ -1,20 +1,27 @@
 package com.example.simulaton.commands;
 
+import com.example.simulaton.exceptions.FalloffException;
 import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.utils.CommandUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
  * Created by rajib.khan on 1/21/17.
+ * {@link CommandFactory} sets up all the {@link Command}s and behaviour
+ * for these {@link Command}s
  */
 public class CommandFactory {
 
     private static final String MESSAGE_QUIT = "Exiting simulator!";
     static Logger logger = LoggerFactory.getLogger(CommandFactory.class);
+    // minPoint and maxPoint will be set as defined in application.properties
+    static Point minPoint = new Point(0, 0);
+    static Point maxPoint = new Point(5, 5);
     private final HashMap<CommandType, Command> commands;
 
     private CommandFactory() {
@@ -30,8 +37,10 @@ public class CommandFactory {
     public static CommandFactory init() {
         CommandFactory cf = new CommandFactory();
         cf.addCommand(CommandType.PLACE, (p, r) -> {
-            if (r.isPresent() && p.isPresent()) {
-                r.get().setCurrentPosition(p.get());
+            try {
+                CommandUtil.place(r, p, minPoint, maxPoint);
+            } catch (FalloffException foEx) {
+                logger.error(foEx.getMessage());
             }
             return p;
         });
@@ -46,7 +55,12 @@ public class CommandFactory {
             return p;
         });
         cf.addCommand(CommandType.MOVE, (p, r) -> {
-            CommandUtil.move(r);
+            try {
+                CommandUtil.move(r, minPoint, maxPoint);
+            } catch (FalloffException foEx) {
+                logger.error(foEx.getMessage());
+            }
+
             return p;
         });
         cf.addCommand(CommandType.REPORT, (p, r) -> {
@@ -58,6 +72,14 @@ public class CommandFactory {
             return p;
         });
         return cf;
+    }
+
+    public static void setMinPoint(Point minPoint) {
+        CommandFactory.minPoint = minPoint;
+    }
+
+    public static void setMaxPoint(Point maxPoint) {
+        CommandFactory.maxPoint = maxPoint;
     }
 
     /**
