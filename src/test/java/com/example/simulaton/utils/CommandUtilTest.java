@@ -2,7 +2,6 @@ package com.example.simulaton.utils;
 
 import com.example.simulaton.commands.CommandType;
 import com.example.simulaton.exceptions.InvalidCommnadException;
-import com.example.simulaton.models.Direction;
 import com.example.simulaton.models.DirectionEnum;
 import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
@@ -14,17 +13,16 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by rajib.khan on 1/22/17.
  */
 public class CommandUtilTest {
 
-    private Directions directions = new Directions();
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+    private Directions directions = new Directions();
 
     @Test
     public void getCommandFromString_should_return_LEFT() {
@@ -96,7 +94,7 @@ public class CommandUtilTest {
     @Test
     public void parsePlaceCommand_should_return_position_NORTH() throws InvalidCommnadException {
         assertThat("should return (0,0,NORTH)", CommandUtil.parsePlaceCommand("PLACE    0 , 0, NORTH"),
-                is(new Position(0,0, directions.get((DirectionEnum.NORTH)))));
+                is(new Position(0, 0, directions.get((DirectionEnum.NORTH)))));
     }
 
     @Test

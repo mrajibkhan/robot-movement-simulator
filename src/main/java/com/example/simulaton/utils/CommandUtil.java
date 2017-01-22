@@ -6,10 +6,11 @@ import com.example.simulaton.models.Direction;
 import com.example.simulaton.models.DirectionEnum;
 import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by rajib.khan on 1/22/17.
@@ -23,7 +24,7 @@ public class CommandUtil {
         Optional<CommandType> command = getCommandFromString(inputStr);
         Optional<Position> position = Optional.empty();
 
-        if(!command.isPresent()) {
+        if (!command.isPresent()) {
             return commandMap;
         } else if (command.get().equals(CommandType.PLACE)) {
             position = Optional.of(parsePlaceCommand(inputStr));

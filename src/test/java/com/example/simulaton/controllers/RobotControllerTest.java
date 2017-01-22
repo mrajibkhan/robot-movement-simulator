@@ -5,6 +5,7 @@ import com.example.simulaton.exceptions.InvalidCommnadException;
 import com.example.simulaton.models.DirectionEnum;
 import com.example.simulaton.models.Directions;
 import com.example.simulaton.models.Position;
+import com.example.simulaton.models.Robot;
 import com.example.simulaton.services.UserInteractionService;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by rajib.khan on 1/21/17.
@@ -28,14 +29,12 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RobotControllerTest {
 
-    @InjectMocks
-    RobotController robotController;
-
-    @Mock
-    UserInteractionService userInteractionService;
-
     @Rule
     public OutputCapture capture = new OutputCapture();
+    @InjectMocks
+    RobotController robotController;
+    @Mock
+    UserInteractionService userInteractionService;
 
     @Test
     public void run_should_place_robot_on_table() {
@@ -67,9 +66,9 @@ public class RobotControllerTest {
     }
 
     @Test
-    public void run_should_change_robot_position_for_PLACE_command () {
-        Position startPosition = new Position(0,0, new Directions().get(DirectionEnum.NORTH));
-        Position currentPosition = new Position(5,5, new Directions().get(DirectionEnum.WEST));
+    public void run_should_change_robot_position_for_PLACE_command() {
+        Position startPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
+        Position currentPosition = new Position(5, 5, new Directions().get(DirectionEnum.WEST));
         Mockito.when(userInteractionService.readUserInput())
                 .thenReturn("PLACE 0,0,NORTH")
                 .thenReturn("PLACE 5, 5, WEST")
@@ -80,7 +79,19 @@ public class RobotControllerTest {
     }
 
     @Test
-    public void run_should_print_not_implemented_for_left_afer_start() {
+    public void run_should_display_robot_position_for_REPORT_command() {
+        Position startPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
+        Position currentPosition = new Position(5, 5, new Directions().get(DirectionEnum.WEST));
+        Mockito.when(userInteractionService.readUserInput())
+                .thenReturn("PLACE 5, 5, WEST")
+                .thenReturn("REPORT")
+                .thenReturn("QUIT");
+        robotController.run();
+        assertThat(capture.toString(), containsString("Robot position: 5, 5, WEST"));
+    }
+
+    @Test
+    public void run_should_display_not_implemented_for_left_afer_start() {
         Mockito.when(userInteractionService.readUserInput())
                 .thenReturn("PLACE 0,0,NORTH")
                 .thenReturn("LEFT")
@@ -91,35 +102,38 @@ public class RobotControllerTest {
 
     @Test
     public void placeRobotOnTable_should_initialise_robot() {
-        Position startPosition = new Position(0,0, new Directions().get(DirectionEnum.NORTH));
+        Position startPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
         robotController.placeRobotOnTable(startPosition);
         assertThat(robotController.robot.isPresent(), is(true));
     }
 
     @Test
     public void placeRobotOnTable_should_set_robot_start_position() {
-        Position startPosition = new Position(0,0, new Directions().get(DirectionEnum.NORTH));
+        Position startPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
         robotController.placeRobotOnTable(startPosition);
         assertThat(robotController.robot.get().getStartPosition(), is(startPosition));
     }
 
     @Test
     public void placeRobotOnTable_should_set_robot_current_position() {
-        Position startPosition = new Position(0,0, new Directions().get(DirectionEnum.NORTH));
+        Position startPosition = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
         robotController.placeRobotOnTable(startPosition);
         assertThat(robotController.robot.get().getCurrentPosition(), is(startPosition));
     }
 
-//    @Test
-//    public void executePositionCommand_should_return_position () throws InvalidCommnadException {
-//        assertThat(commandFactory.executeCommand(CommandType.PLACE, Optional.of(position)), is(Optional.of(position)));
-//    }
-//
-//    @Test
-//    public void executeUnknownCommand_should_throw_exception () throws InvalidCommnadException {
-//        thrown.expect(InvalidCommnadException.class);
-//        thrown.expectMessage("Unknown command");
-//        commandFactory.executeCommand(null, Optional.of(position));
-//    }
+    @Test
+    public void executePositionCommand_should_display_position() throws InvalidCommnadException {
+        Position position = new Position(0, 0, new Directions().get(DirectionEnum.NORTH));
+        Robot robot = new Robot("test1");
+        robot.setCurrentPosition(position);
+        robotController.executeCommand(CommandType.REPORT, Optional.of(position), Optional.of(robot));
+        assertThat(capture.toString(), containsString("Robot position: 0, 0, NORTH"));
+    }
+
+    @Test
+    public void executePositionCommand_should_position() throws InvalidCommnadException {
+        robotController.executeCommand(CommandType.REPORT, Optional.empty(), Optional.empty());
+        assertThat(capture.toString(), containsString("Robot position: unknown"));
+    }
 
 }

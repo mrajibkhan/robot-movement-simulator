@@ -1,7 +1,6 @@
 package com.example.simulaton;
 
 import com.example.simulaton.controllers.RobotController;
-import com.example.simulaton.services.UserInteractionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
